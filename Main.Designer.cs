@@ -1,5 +1,5 @@
 ﻿
-namespace UrlChange
+namespace SearchRegex
 {
   partial class Main
   {
@@ -31,7 +31,7 @@ namespace UrlChange
     {
       System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Main));
       this.lblAfterUrl = new System.Windows.Forms.Label();
-      this.txtAfterUrl = new System.Windows.Forms.TextBox();
+      this.txtAfter = new System.Windows.Forms.TextBox();
       this.btnView = new System.Windows.Forms.Button();
       this.btnChange = new System.Windows.Forms.Button();
       this.txtRegex = new System.Windows.Forms.TextBox();
@@ -47,16 +47,18 @@ namespace UrlChange
       this.btnSave = new System.Windows.Forms.Button();
       this.btnClear = new System.Windows.Forms.Button();
       this.dgvList = new System.Windows.Forms.DataGridView();
-      this.rbTypeNomal = new System.Windows.Forms.RadioButton();
-      this.rbTypeFile = new System.Windows.Forms.RadioButton();
-      this.gbType = new System.Windows.Forms.GroupBox();
-      this.lblExplane1 = new System.Windows.Forms.Label();
-      this.lblExplane2 = new System.Windows.Forms.Label();
       this.ColKey = new System.Windows.Forms.DataGridViewTextBoxColumn();
       this.ColContext = new System.Windows.Forms.DataGridViewTextBoxColumn();
       this.ColChange = new System.Windows.Forms.DataGridViewTextBoxColumn();
       this.ColChangeAfter = new System.Windows.Forms.DataGridViewTextBoxColumn();
       this.ColAfterContext = new System.Windows.Forms.DataGridViewTextBoxColumn();
+      this.rbTypeNomal = new System.Windows.Forms.RadioButton();
+      this.rbTypeFile = new System.Windows.Forms.RadioButton();
+      this.gbType = new System.Windows.Forms.GroupBox();
+      this.lblExplane1 = new System.Windows.Forms.Label();
+      this.lblExplane2 = new System.Windows.Forms.Label();
+      this.lblDB = new System.Windows.Forms.Label();
+      this.txtDBConn = new System.Windows.Forms.TextBox();
       ((System.ComponentModel.ISupportInitialize)(this.dgvList)).BeginInit();
       this.gbType.SuspendLayout();
       this.SuspendLayout();
@@ -70,16 +72,16 @@ namespace UrlChange
       this.lblAfterUrl.TabIndex = 2;
       this.lblAfterUrl.Text = "AfterUrl";
       // 
-      // txtAfterUrl
+      // txtAfter
       // 
-      this.txtAfterUrl.Location = new System.Drawing.Point(8, 310);
-      this.txtAfterUrl.Name = "txtAfterUrl";
-      this.txtAfterUrl.Size = new System.Drawing.Size(922, 27);
-      this.txtAfterUrl.TabIndex = 3;
+      this.txtAfter.Location = new System.Drawing.Point(8, 310);
+      this.txtAfter.Name = "txtAfter";
+      this.txtAfter.Size = new System.Drawing.Size(922, 27);
+      this.txtAfter.TabIndex = 3;
       // 
       // btnView
       // 
-      this.btnView.Location = new System.Drawing.Point(836, 115);
+      this.btnView.Location = new System.Drawing.Point(836, 95);
       this.btnView.Name = "btnView";
       this.btnView.Size = new System.Drawing.Size(94, 29);
       this.btnView.TabIndex = 4;
@@ -89,7 +91,7 @@ namespace UrlChange
       // 
       // btnChange
       // 
-      this.btnChange.Location = new System.Drawing.Point(836, 150);
+      this.btnChange.Location = new System.Drawing.Point(836, 131);
       this.btnChange.Name = "btnChange";
       this.btnChange.Size = new System.Drawing.Size(94, 29);
       this.btnChange.TabIndex = 5;
@@ -116,7 +118,7 @@ namespace UrlChange
       // lblTable
       // 
       this.lblTable.AutoSize = true;
-      this.lblTable.Location = new System.Drawing.Point(7, 134);
+      this.lblTable.Location = new System.Drawing.Point(4, 134);
       this.lblTable.Name = "lblTable";
       this.lblTable.Size = new System.Drawing.Size(46, 20);
       this.lblTable.TabIndex = 10;
@@ -142,13 +144,13 @@ namespace UrlChange
       // 
       this.txtKeyColumn.Location = new System.Drawing.Point(336, 131);
       this.txtKeyColumn.Name = "txtKeyColumn";
-      this.txtKeyColumn.Size = new System.Drawing.Size(125, 27);
+      this.txtKeyColumn.Size = new System.Drawing.Size(175, 27);
       this.txtKeyColumn.TabIndex = 13;
       // 
       // lblValColumn
       // 
       this.lblValColumn.AutoSize = true;
-      this.lblValColumn.Location = new System.Drawing.Point(467, 134);
+      this.lblValColumn.Location = new System.Drawing.Point(517, 134);
       this.lblValColumn.Name = "lblValColumn";
       this.lblValColumn.Size = new System.Drawing.Size(102, 20);
       this.lblValColumn.TabIndex = 14;
@@ -156,15 +158,15 @@ namespace UrlChange
       // 
       // txtValColumn
       // 
-      this.txtValColumn.Location = new System.Drawing.Point(575, 131);
+      this.txtValColumn.Location = new System.Drawing.Point(634, 131);
       this.txtValColumn.Name = "txtValColumn";
-      this.txtValColumn.Size = new System.Drawing.Size(125, 27);
+      this.txtValColumn.Size = new System.Drawing.Size(196, 27);
       this.txtValColumn.TabIndex = 15;
       // 
       // lblWhere
       // 
       this.lblWhere.AutoSize = true;
-      this.lblWhere.Location = new System.Drawing.Point(8, 166);
+      this.lblWhere.Location = new System.Drawing.Point(4, 171);
       this.lblWhere.Name = "lblWhere";
       this.lblWhere.Size = new System.Drawing.Size(53, 20);
       this.lblWhere.TabIndex = 16;
@@ -172,14 +174,14 @@ namespace UrlChange
       // 
       // txtWhere
       // 
-      this.txtWhere.Location = new System.Drawing.Point(8, 196);
+      this.txtWhere.Location = new System.Drawing.Point(63, 168);
       this.txtWhere.Name = "txtWhere";
-      this.txtWhere.Size = new System.Drawing.Size(822, 27);
+      this.txtWhere.Size = new System.Drawing.Size(767, 27);
       this.txtWhere.TabIndex = 17;
       // 
       // btnSave
       // 
-      this.btnSave.Location = new System.Drawing.Point(836, 185);
+      this.btnSave.Location = new System.Drawing.Point(836, 166);
       this.btnSave.Name = "btnSave";
       this.btnSave.Size = new System.Drawing.Size(94, 29);
       this.btnSave.TabIndex = 18;
@@ -189,7 +191,7 @@ namespace UrlChange
       // 
       // btnClear
       // 
-      this.btnClear.Location = new System.Drawing.Point(836, 220);
+      this.btnClear.Location = new System.Drawing.Point(836, 201);
       this.btnClear.Name = "btnClear";
       this.btnClear.Size = new System.Drawing.Size(94, 29);
       this.btnClear.TabIndex = 19;
@@ -214,6 +216,45 @@ namespace UrlChange
       this.dgvList.RowTemplate.Height = 29;
       this.dgvList.Size = new System.Drawing.Size(942, 296);
       this.dgvList.TabIndex = 20;
+      // 
+      // ColKey
+      // 
+      this.ColKey.HeaderText = "Key";
+      this.ColKey.MinimumWidth = 6;
+      this.ColKey.Name = "ColKey";
+      this.ColKey.ReadOnly = true;
+      this.ColKey.Width = 62;
+      // 
+      // ColContext
+      // 
+      this.ColContext.HeaderText = "Context";
+      this.ColContext.MinimumWidth = 6;
+      this.ColContext.Name = "ColContext";
+      this.ColContext.ReadOnly = true;
+      this.ColContext.Width = 91;
+      // 
+      // ColChange
+      // 
+      this.ColChange.HeaderText = "ChangeContext";
+      this.ColChange.MinimumWidth = 6;
+      this.ColChange.Name = "ColChange";
+      this.ColChange.ReadOnly = true;
+      this.ColChange.Width = 144;
+      // 
+      // ColChangeAfter
+      // 
+      this.ColChangeAfter.HeaderText = "ChangeAfterContext";
+      this.ColChangeAfter.MinimumWidth = 6;
+      this.ColChangeAfter.Name = "ColChangeAfter";
+      this.ColChangeAfter.ReadOnly = true;
+      this.ColChangeAfter.Width = 177;
+      // 
+      // ColAfterContext
+      // 
+      this.ColAfterContext.HeaderText = "AfterContext";
+      this.ColAfterContext.MinimumWidth = 6;
+      this.ColAfterContext.Name = "ColAfterContext";
+      this.ColAfterContext.Width = 124;
       // 
       // rbTypeNomal
       // 
@@ -271,50 +312,29 @@ namespace UrlChange
     "rated to leave the last part, and the other part is changed to a change characte" +
     "r.";
       // 
-      // ColKey
+      // lblDB
       // 
-      this.ColKey.HeaderText = "Key";
-      this.ColKey.MinimumWidth = 6;
-      this.ColKey.Name = "ColKey";
-      this.ColKey.ReadOnly = true;
-      this.ColKey.Width = 62;
+      this.lblDB.AutoSize = true;
+      this.lblDB.Location = new System.Drawing.Point(4, 98);
+      this.lblDB.Name = "lblDB";
+      this.lblDB.Size = new System.Drawing.Size(113, 20);
+      this.lblDB.TabIndex = 28;
+      this.lblDB.Text = "DB Connection";
       // 
-      // ColContext
+      // txtDBConn
       // 
-      this.ColContext.HeaderText = "Context";
-      this.ColContext.MinimumWidth = 6;
-      this.ColContext.Name = "ColContext";
-      this.ColContext.ReadOnly = true;
-      this.ColContext.Width = 91;
-      // 
-      // ColChange
-      // 
-      this.ColChange.HeaderText = "ChangeContext";
-      this.ColChange.MinimumWidth = 6;
-      this.ColChange.Name = "ColChange";
-      this.ColChange.ReadOnly = true;
-      this.ColChange.Width = 144;
-      // 
-      // ColChangeAfter
-      // 
-      this.ColChangeAfter.HeaderText = "ChangeAfterContext";
-      this.ColChangeAfter.MinimumWidth = 6;
-      this.ColChangeAfter.Name = "ColChangeAfter";
-      this.ColChangeAfter.ReadOnly = true;
-      this.ColChangeAfter.Width = 177;
-      // 
-      // ColAfterContext
-      // 
-      this.ColAfterContext.HeaderText = "AfterContext";
-      this.ColAfterContext.MinimumWidth = 6;
-      this.ColAfterContext.Name = "ColAfterContext";
-      this.ColAfterContext.Width = 124;
+      this.txtDBConn.Location = new System.Drawing.Point(131, 95);
+      this.txtDBConn.Name = "txtDBConn";
+      this.txtDBConn.Size = new System.Drawing.Size(699, 27);
+      this.txtDBConn.TabIndex = 29;
       // 
       // Main
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.ClientSize = new System.Drawing.Size(942, 639);
+      this.Controls.Add(this.txtDBConn);
+      this.Controls.Add(this.lblDB);
       this.Controls.Add(this.lblExplane2);
       this.Controls.Add(this.lblExplane1);
       this.Controls.Add(this.gbType);
@@ -333,7 +353,7 @@ namespace UrlChange
       this.Controls.Add(this.txtRegex);
       this.Controls.Add(this.btnChange);
       this.Controls.Add(this.btnView);
-      this.Controls.Add(this.txtAfterUrl);
+      this.Controls.Add(this.txtAfter);
       this.Controls.Add(this.lblAfterUrl);
       this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
       this.Name = "Main";
@@ -349,7 +369,7 @@ namespace UrlChange
 
     #endregion
     private System.Windows.Forms.Label lblAfterUrl;
-    private System.Windows.Forms.TextBox txtAfterUrl;
+    private System.Windows.Forms.TextBox txtAfter;
     private System.Windows.Forms.Button btnView;
     private System.Windows.Forms.Button btnChange;
     private System.Windows.Forms.TextBox textBox1;
@@ -376,6 +396,8 @@ namespace UrlChange
     private System.Windows.Forms.DataGridViewTextBoxColumn ColChange;
     private System.Windows.Forms.DataGridViewTextBoxColumn ColChangeAfter;
     private System.Windows.Forms.DataGridViewTextBoxColumn ColAfterContext;
+    private System.Windows.Forms.Label lblDB;
+    private System.Windows.Forms.TextBox txtDBConn;
   }
 }
 

@@ -1,62 +1,65 @@
 ﻿using System;
 using System.IO;
-using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Collections.Generic;
 using System.Windows.Forms;
 using MySql.Data.MySqlClient;
 using Microsoft.Extensions.Configuration;
 using System.Text.RegularExpressions;
 
-namespace UrlChange
+namespace SearchRegex
 {
   public partial class Main : Form
   {
+    /// <summary>
+    /// Connection settings
+    /// </summary>
     IConfiguration CONFIG;
-    Dictionary<string, string> ROW_LIST;
+    /// <summary>
+    /// Connection
+    /// </summary>
     MySqlConnection CONN;
+    /// <summary>
+    /// regex change type
+    /// </summary>
     char TYPE = 'N';
 
+    /// <summary>
+    /// Start the program
+    /// </summary>
+    /// <remarks>
+    /// Read the configuration file and mark it in the database configuration text.
+    /// Proceed with the basic setting of the regular expression change type.
+    /// </remarks>
     public Main()
     {
       Cursor = Cursors.WaitCursor;
       InitializeComponent();
       CONN = null;
-      string msg = null;
       rbTypeNomal.Checked = false;
       rbTypeFile.Checked = true;
-
-      try
-      {
-        ROW_LIST = new Dictionary<string, string>();
-        CONFIG = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory())
+      CONFIG = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory())
                                          .AddJsonFile("config.json", true, true)
                                          .Build();
-        IConfigurationSection section = CONFIG.GetSection("Corp");
-        string strDBConn = section["DBConn"];
-        CONN = new MySqlConnection(strDBConn);
-        CONN.Open();
-      }
-      catch (MySqlException ex)
+      IConfigurationSection section = CONFIG.GetSection("Corp");
+      string strDBConn = section["DBConn"];
+      if (string.IsNullOrEmpty(txtDBConn.Text.Trim()))
       {
-        msg = ex.Message;
-        Console.Write(ex.Message);
+        txtDBConn.Text = strDBConn;
       }
-      catch (Exception ex)
-      {
-        msg = ex.Message;
-        Console.Write(ex.Message);
-      }
-      finally
-      {
-        Cursor = Cursors.Default;
-        if(msg != null)
-        {
-          MessageBox.Show(msg, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        }
-      }
+      Cursor = Cursors.Default;
     }
 
+    /// <summary>
+    /// Action when the View button is clicked.
+    /// </summary>
+    /// <remarks>
+    /// Connect to the database.
+    /// and read data from database.
+    /// </remarks>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     private void btnView_Click(object sender, EventArgs e)
     {
       Cursor = Cursors.WaitCursor;
@@ -65,9 +68,15 @@ namespace UrlChange
 
       try
       {
-        SelectToMySQL();
+        DBConn();
+        SelectToDB();
       }
       catch (MySqlException ex)
+      {
+        msg = ex.Message;
+        Console.Write(ex.Message);
+      }
+      catch (Exception ex)
       {
         msg = ex.Message;
         Console.Write(ex.Message);
@@ -86,6 +95,15 @@ namespace UrlChange
       }
     }
 
+    /// <summary>
+    /// It works when the change button is pressed.
+    /// </summary>
+    /// <remarks>
+    /// Changes a value according to a regular expression and displays the changed value,
+    /// the changed value, and the total changed value.
+    /// </remarks>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     private void btnChange_Click(object sender, EventArgs e)
     {
       Cursor = Cursors.WaitCursor;
@@ -108,10 +126,7 @@ namespace UrlChange
           dgvr.Cells[intColChange].Value = "";
           dgvr.Cells[intColChangeAfter].Value = "";
           dgvr.Cells[intColAfterContext].Value = "";
-                //  相対パス
-          // "(\/profile\/news\/)(.*?)((pdf)|(jpg)|(png)|(zip)|(pptx)|(jpeg))"
-                 //  絶対パス
-          // "(https:\/\/willgroup.co.jp)(.*?)((pdf)|(jpg)|(png)|(zip)|(pptx)|(jpeg))"|'(https:\/\/willgroup.co.jp)(.*?)((pdf)|(jpg)|(png)|(zip)|(pptx)|(jpeg))'
+
           var matches = Regex.Matches(value, txtRegex.Text).Cast<Match>().OrderBy(x => x.Length);
           foreach (Match mItem in matches)
           {
@@ -146,27 +161,37 @@ namespace UrlChange
       }
     }
 
+    /// <summary>
+    /// Runs when the program is closed.
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     private void Main_FormClosing(object sender, FormClosingEventArgs e)
     {
-      if (CONN != null)
-      {
-        CONN.Close();
-        CONN.Dispose();
-        CONN = null;
-      }
-      if (ROW_LIST != null)
-      {
-        ROW_LIST.Clear();
-        ROW_LIST = null;
-      }
-      CONFIG = null;
+      close();
     }
 
+    /// <summary>
+    /// It works when the clear button is pressed.
+    /// </summary>
+    /// <remarks>
+    /// The connection to the database is persistent.
+    /// </remarks>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     private void btnClear_Click(object sender, EventArgs e)
     {
       dgvList.Rows.Clear();
     }
 
+    /// <summary>
+    /// It works when the save button is pressed.
+    /// </summary>
+    /// <remarks>
+    /// It is processed one row at a time, and it is not saved for rows that do not change.
+    /// </remarks>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     private void btnSave_Click(object sender, EventArgs e)
     {
       Cursor = Cursors.WaitCursor;
@@ -194,7 +219,7 @@ namespace UrlChange
 
           if (!string.IsNullOrEmpty(change) && !string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(val))
           {
-            result = UpdateToMySQL(key, val);
+            result = UpdateToDB(key, val);
           }
           else
           {
@@ -240,27 +265,85 @@ namespace UrlChange
       }
     }
 
-    private string ChangeValue(string moto)
+    /// <summary>
+    /// Make general changes based on regular expressions.
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void rbTypeNomal_CheckedChanged(object sender, EventArgs e)
+    {
+      rbTypeChange();
+    }
+
+    /// <summary>
+    /// Change the file format according to the regular expression.
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void rbTypeFile_CheckedChanged(object sender, EventArgs e)
+    {
+      rbTypeChange();
+    }
+
+    /// <summary>
+    /// DB Connection
+    /// </summary>
+    /// <remarks>
+    /// Currently, only MySQL can connect. We plan to add other database connections as well.
+    /// </remarks>
+    private void DBConn()
+    {
+      Cursor = Cursors.WaitCursor;
+
+      try
+      {
+        string strDBConn = txtDBConn.Text.Trim();
+        CONN = new MySqlConnection(strDBConn);
+        CONN.Open();
+      }
+      catch
+      {
+        throw;
+      }
+      finally
+      {
+        Cursor = Cursors.Default;
+      }
+    }
+
+    /// <summary>
+    /// change of value
+    /// </summary>
+    /// <remarks>
+    /// Change the matching value according to the regular expression.
+    /// In case of changing the URL format, only the part except the file name is changed.
+    /// </remarks>
+    /// <param name="original">A string that matches the regular expression</param>
+    /// <returns></returns>
+    private string ChangeValue(string original)
     {
       string result = "";
       string cBeforeVal = "";
 
       if (TYPE == 'L')
       {
-        string[] arrMoto = moto.Split('/');
-        cBeforeVal = moto.Replace(arrMoto[arrMoto.Length - 1], "");
+        string[] arrMoto = original.Split('/');
+        cBeforeVal = original.Replace(arrMoto[arrMoto.Length - 1], "");
       }
       else
       {
-        cBeforeVal = moto;
+        cBeforeVal = original;
       }
 
-      string cAfterVal = txtAfterUrl.Text;
-      result = moto.Replace(cBeforeVal, cAfterVal);
+      string cAfterVal = txtAfter.Text;
+      result = original.Replace(cBeforeVal, cAfterVal);
       return result;
     }
 
-    private void SelectToMySQL()
+    /// <summary>
+    /// Read data from database.
+    /// </summary>
+    private void SelectToDB()
     {
       MySqlCommand cmd = null;
       MySqlDataReader reader = null;
@@ -271,7 +354,7 @@ namespace UrlChange
           CONN.Open();
         }
         cmd = CONN.CreateCommand();
-        cmd.CommandText = string.Format("SELECT p.{0}, p.{1} FROM willgroupcorp.{2} p WHERE {3};", txtKeyColumn.Text, txtValColumn.Text, txtTable.Text, txtWhere.Text);
+        cmd.CommandText = string.Format("SELECT p.{0}, p.{1} FROM {2} p WHERE {3};", txtKeyColumn.Text, txtValColumn.Text, txtTable.Text, txtWhere.Text);
 
         reader = cmd.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
         while (reader.Read())
@@ -301,7 +384,17 @@ namespace UrlChange
       }
     }
 
-    private bool UpdateToMySQL(string key, string val)
+    /// <summary>
+    /// change of the data
+    /// </summary>
+    /// <remarks>
+    /// Updates one row at a time. 
+    /// It also rollback row by row.
+    /// </remarks>
+    /// <param name="key">The value of the key column that is the condition to update the table.</param>
+    /// <param name="val">value to change in that column.</param>
+    /// <returns></returns>
+    private bool UpdateToDB(string key, string val)
     {
       bool result = false;
 
@@ -315,7 +408,7 @@ namespace UrlChange
           CONN.Open();
         }
         cmd = CONN.CreateCommand();
-        cmd.CommandText = string.Format("UPDATE willgroupcorp.{0} SET {1} = '{2}' WHERE {3} = '{4}';", txtTable.Text, txtValColumn.Text, val, txtKeyColumn.Text, key);
+        cmd.CommandText = string.Format("UPDATE {0} SET {1} = '{2}' WHERE {3} = '{4}';", txtTable.Text, txtValColumn.Text, val, txtKeyColumn.Text, key);
 
         trans = cmd.Connection.BeginTransaction(IsolationLevel.ReadCommitted);
         cmd.ExecuteNonQuery();
@@ -329,6 +422,7 @@ namespace UrlChange
       }
       catch (Exception)
       {
+        trans.Rollback();
         throw;
       }
       finally
@@ -346,24 +440,42 @@ namespace UrlChange
       return result;
     }
 
-    private void rbTypeNomal_CheckedChanged(object sender, EventArgs e)
+    /// <summary>
+    /// Change the regular expression type.
+    /// </summary>
+    /// <remarks>
+    /// Set variables for screen change and logic change according to regular expression type change.
+    /// </remarks>
+    private void rbTypeChange()
     {
+      string label = "";
+
       if (rbTypeNomal.Checked)
       {
         TYPE = 'N';
+        label = "AfterText";
       }
-      lblAfterUrl.Text = "AfterText";
-    }
-
-    private void rbTypeFile_CheckedChanged(object sender, EventArgs e)
-    {
-      if(rbTypeFile.Checked)
+      else
       {
         TYPE = 'L';
+        label = "AfterUrl";
       }
-      lblAfterUrl.Text = "AfterUrl";
+      lblAfterUrl.Text = label;
     }
 
-    
+    /// <summary>
+    /// Handling when the program ends
+    /// </summary>
+    private void close()
+    {
+      if (CONN != null)
+      {
+        CONN.Close();
+        CONN.Dispose();
+        CONN = null;
+      }
+      CONFIG = null;
+    }
+
   }
 }
