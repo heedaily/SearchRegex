@@ -1,5 +1,5 @@
 # SearchRegex
-You can connect to the DB, get the data of the corresponding column from the table, 
+You can connect to the MySQLDB, get the data of the corresponding column from the table, 
 convert the characters from the corresponding regular expression, and check and correct the converted contents.
 
 code：
